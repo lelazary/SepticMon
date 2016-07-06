@@ -1,8 +1,12 @@
 install arduino-1.6.5
-install https://github.com/adafruit/Adafruit_ILI9341
-install https://github.com/adafruit/Adafruit-GFX-Library
+Copy the libraries folder to arduino-1.6.5-r5/libraries
 
-Sound greated with 
+copy *.bmp and *.wav to the sdcard
+
+
+
+To Create Sounds
+Sound created with 
 http://www.fromtexttospeech.com/
 
 Using Audacity:
@@ -13,5 +17,4 @@ File > Export > Save as type: Other uncompressed files > Options...
 Select WAV, Unsigned 8 bit PCM    
 
 For images
-Export grom gimp as 'windows BMP' with 24 bit 8x8x8
-
+Export from gimp as 'windows BMP' with 24 bit 8x8x8
