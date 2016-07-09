@@ -1,5 +1,7 @@
-install arduino-1.6.5
-Copy the libraries folder to arduino-1.6.5-r5/libraries
+Install arduino-1.6.5 from https://www.arduino.cc/en/Main/OldSoftwareReleases#previous
+
+
+Copy the libraries from the libraries folder in this repository to arduino-1.6.5-r5/libraries
 
 copy *.bmp and *.wav to the sdcard
 
@@ -17,4 +19,5 @@ File > Export > Save as type: Other uncompressed files > Options...
 Select WAV, Unsigned 8 bit PCM    
 
 For images
-Export from gimp as 'windows BMP' with 24 bit 8x8x8
+Export from gimp as 'windows BMP' with 24 bit 8x8x8  320x240
+
