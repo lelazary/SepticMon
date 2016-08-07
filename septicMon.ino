@@ -20,6 +20,9 @@ TMRpcm tmrpcm;
 Sd2Card card; bool card_initialized;
 
 int lowAirPin = 30;
+int highLevelPin = 31;
+int UVPin = 32;
+int SpareAlarm = 33;
 
 void blinkLED()
 {
@@ -89,12 +92,16 @@ void setup()
   showSepticStatus();
 }
 
+
 void showSepticStatus ()
 {
-  bmpDraw(tft, "septic.bmp", 0, 0);
 
+  int lowAirTrigger = 0;
+  int highLevelTrigger = 0;
+  int UVTrigger = 0;
+  int SpareAlarmTrigger = 0;
 
-  Label lblLowAir("LOW AIR", ILI9341_BLACK);
+  Label lblLowAir("", ILI9341_BLACK);
   lblLowAir.setPositionAndSize(0, 0, 100, 35); 
   lblLowAir.draw(tft);
   
@@ -117,17 +124,54 @@ void showSepticStatus ()
       
     }
 
+    bmpDraw(tft, "septic.bmp", 0, 0);
+
     if (digitalRead(lowAirPin) == LOW)
     {
-      
-      lblLowAir.updateTextAndColor("LOW AIR", ILI9341_RED, tft);
-      if (soundCounter++ > 5){
-         playSound(tmrpcm, "low_air.wav");
-         soundCounter=0;
-      }
-    
+        lowAirTrigger = 1;
+        lblLowAir.updateTextAndColor("LOW AIR ALARM", ILI9341_RED, tft);
+        if (soundCounter++ > 5){
+           playSound(tmrpcm, "low_air.wav");
+           soundCounter=0;
+        }
     } else {
-      lblLowAir.updateTextAndColor("LOW AIR", ILI9341_BLACK, tft);
+      if (lowAirTrigger)
+      {
+         lblLowAir.updateTextAndColor("LOW AIR RESET", ILI9341_BLACK, tft);
+         lowAirTrigger = 0;
+      }
+    }
+
+    if (digitalRead(highLevelPin) == LOW)
+    {
+        highLevelTrigger = 1;
+        lblLowAir.updateTextAndColor("HIGH LEVEL ALARM", ILI9341_RED, tft);
+        if (soundCounter++ > 5){
+           playSound(tmrpcm, "highLevel.wav");
+           soundCounter=0;
+        }
+    } else {
+      if (highLevelTrigger)
+      {
+         lblLowAir.updateTextAndColor("HIGH LEVEL RESET", ILI9341_BLACK, tft);
+         highLevelTrigger = 0;
+      }
+    }
+
+    if (digitalRead(UVPin) == LOW)
+    {
+        UVTrigger = 1;
+        lblLowAir.updateTextAndColor("UV ALARM", ILI9341_RED, tft);
+        if (soundCounter++ > 5){
+           playSound(tmrpcm, "UVAlarm.wav");
+           soundCounter=0;
+        }
+    } else {
+      if (UVTrigger)
+      {
+         lblLowAir.updateTextAndColor("UV ALARM RESET", ILI9341_BLACK, tft);
+         UVTrigger = 0;
+      }
     }
         
     delay(500);
