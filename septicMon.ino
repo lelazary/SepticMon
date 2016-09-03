@@ -92,6 +92,25 @@ void setup()
   showSepticStatus();
 }
 
+const String& lastText = ""
+
+void updateString(Adafruit_GFX &tft,
+                  const String &text,
+                  uint16_t color,
+                  Label& label)
+{
+    if (lastText != text)
+    {
+      lastText = text;
+      tft.fillRoundRect(2, 0, 200, 35, 10, ILI9341_WHITE);
+      label.updateTextAndColor(text, color, tft);
+      
+    }
+
+
+  
+}
+
 
 void showSepticStatus ()
 {
@@ -101,15 +120,20 @@ void showSepticStatus ()
   int UVTrigger = 0;
   int SpareAlarmTrigger = 0;
 
-  Label lblLowAir("", ILI9341_BLACK);
-  lblLowAir.setPositionAndSize(0, 0, 100, 35); 
-  lblLowAir.draw(tft);
   
   pinMode(lowAirPin, INPUT_PULLUP);
   
   bool soundPlayed = false;
   unsigned long starttime = millis();
   int soundCounter = 5;
+
+  
+  bmpDraw(tft, "septic.bmp", 0, 0);
+  Label lblLowAir("", ILI9341_BLACK);
+  lblLowAir.setPositionAndSize(10, 3, 100, 28); 
+  lblLowAir.draw(tft);
+  tft.fillRoundRect(2, 0, 200, 35, 10, ILI9341_WHITE);
+  
   while(true)
   {
     if (touch.dataAvailable())
@@ -124,39 +148,28 @@ void showSepticStatus ()
       
     }
 
-    bmpDraw(tft, "septic.bmp", 0, 0);
-
+    
     if (digitalRead(lowAirPin) == LOW)
     {
-        lowAirTrigger = 1;
-        lblLowAir.updateTextAndColor("LOW AIR ALARM", ILI9341_RED, tft);
-        if (soundCounter++ > 5){
+        
+        updateString(        
+        if (soundCounter++ > 10){
            playSound(tmrpcm, "low_air.wav");
            soundCounter=0;
         }
-    } else {
-      if (lowAirTrigger)
-      {
-         lblLowAir.updateTextAndColor("LOW AIR RESET", ILI9341_BLACK, tft);
-         lowAirTrigger = 0;
-      }
-    }
+    } 
 
     if (digitalRead(highLevelPin) == LOW)
     {
-        highLevelTrigger = 1;
+        tft.fillRoundRect(2, 0, 200, 35, 10, ILI9341_WHITE);
         lblLowAir.updateTextAndColor("HIGH LEVEL ALARM", ILI9341_RED, tft);
         if (soundCounter++ > 5){
            playSound(tmrpcm, "highLevel.wav");
            soundCounter=0;
         }
-    } else {
-      if (highLevelTrigger)
-      {
-         lblLowAir.updateTextAndColor("HIGH LEVEL RESET", ILI9341_BLACK, tft);
-         highLevelTrigger = 0;
-      }
     }
+    lblLowAir.draw(tft);
+    /*
 
     if (digitalRead(UVPin) == LOW)
     {
@@ -172,11 +185,11 @@ void showSepticStatus ()
          lblLowAir.updateTextAndColor("UV ALARM RESET", ILI9341_BLACK, tft);
          UVTrigger = 0;
       }
-    }
+    }*/
         
-    delay(500);
+    //delay(100);
   }
-  tft.fillScreen(ILI9341_BLACK);
+  //tft.fillScreen(ILI9341_BLACK);
 }
 
 
