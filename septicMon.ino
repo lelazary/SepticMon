@@ -18,6 +18,9 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(PLDuino::LCD_CS, PLDuino::LCD_DC);
 PLDTouch touch(PLDuino::TOUCH_CS, PLDuino::TOUCH_IRQ);
 TMRpcm tmrpcm;
 Sd2Card card; bool card_initialized;
+Label lblMsg("--", ILI9341_WHITE, ILI9341_WHITE);
+
+void setClock();
 
 int lowAirPin = 30;
 int highLevelPin = 31;
@@ -92,6 +95,24 @@ void setup()
   showSepticStatus();
 }
 
+void initDisplay()
+{
+
+  bmpDraw(tft, "septic.bmp", 0, 0);
+  tft.fillRoundRect(2, 0, 200, 35, 10, ILI9341_WHITE);
+  
+  lblMsg.setPositionAndSize(10, 3, 320, 28); 
+  lblMsg.draw(tft);
+
+}
+void settings()
+{
+
+   tft.fillScreen(ILI9341_BLACK);
+   setClock();
+   initDisplay();
+  
+}
 
 void showSepticStatus ()
 {
@@ -106,14 +127,7 @@ void showSepticStatus ()
   unsigned long starttime = millis();
   int soundCounter = 5;
 
-  
-  bmpDraw(tft, "septic.bmp", 0, 0);
-
-  tft.fillRoundRect(2, 0, 200, 35, 10, ILI9341_WHITE);
-  Label lblMsg("--", ILI9341_WHITE, ILI9341_WHITE);
-  lblMsg.setPositionAndSize(10, 3, 320, 28); 
-  lblMsg.draw(tft);
-  
+  initDisplay();  
   
   while(true)
   {
@@ -126,6 +140,7 @@ void showSepticStatus ()
       int x = pt.x;
       int y = pt.y;
       Serial.print("x = "); Serial.print(x); Serial.print("; "); Serial.print("y = "); Serial.println(y);
+      settings();
       
     }
 
@@ -164,7 +179,7 @@ void showSepticStatus ()
            
     delay(50);
   }
-  //tft.fillScreen(ILI9341_BLACK);
+  
 }
 
 
