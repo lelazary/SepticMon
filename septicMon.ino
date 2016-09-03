@@ -22,7 +22,7 @@ Sd2Card card; bool card_initialized;
 int lowAirPin = 30;
 int highLevelPin = 31;
 int UVPin = 32;
-int SpareAlarm = 33;
+int spareAlarm = 33;
 
 void blinkLED()
 {
@@ -87,41 +87,20 @@ void setup()
   while(touch.dataAvailable()) touch.read();
   tft.fillScreen(ILI9341_BLACK);
 
-  playSound(tmrpcm, "init.wav");
+  //playSound(tmrpcm, "init.wav");
   
   showSepticStatus();
-}
-
-const String& lastText = ""
-
-void updateString(Adafruit_GFX &tft,
-                  const String &text,
-                  uint16_t color,
-                  Label& label)
-{
-    if (lastText != text)
-    {
-      lastText = text;
-      tft.fillRoundRect(2, 0, 200, 35, 10, ILI9341_WHITE);
-      label.updateTextAndColor(text, color, tft);
-      
-    }
-
-
-  
 }
 
 
 void showSepticStatus ()
 {
 
-  int lowAirTrigger = 0;
-  int highLevelTrigger = 0;
-  int UVTrigger = 0;
-  int SpareAlarmTrigger = 0;
-
   
   pinMode(lowAirPin, INPUT_PULLUP);
+  pinMode(highLevelPin, INPUT_PULLUP);
+  pinMode(UVPin, INPUT_PULLUP);
+  pinMode(spareAlarm, INPUT_PULLUP);
   
   bool soundPlayed = false;
   unsigned long starttime = millis();
@@ -129,10 +108,12 @@ void showSepticStatus ()
 
   
   bmpDraw(tft, "septic.bmp", 0, 0);
-  Label lblLowAir("", ILI9341_BLACK);
-  lblLowAir.setPositionAndSize(10, 3, 100, 28); 
-  lblLowAir.draw(tft);
+
   tft.fillRoundRect(2, 0, 200, 35, 10, ILI9341_WHITE);
+  Label lblMsg("--", ILI9341_WHITE, ILI9341_WHITE);
+  lblMsg.setPositionAndSize(10, 3, 320, 28); 
+  lblMsg.draw(tft);
+  
   
   while(true)
   {
@@ -148,46 +129,40 @@ void showSepticStatus ()
       
     }
 
+    bool alarmStatus = false; //Indicate if we have an alarm
+    String msg;
     
     if (digitalRead(lowAirPin) == LOW)
     {
-        
-        updateString(        
-        if (soundCounter++ > 10){
-           playSound(tmrpcm, "low_air.wav");
-           soundCounter=0;
-        }
-    } 
+      msg = "Low Air Alarm";
+      alarmStatus = true;
+    }
 
     if (digitalRead(highLevelPin) == LOW)
     {
-        tft.fillRoundRect(2, 0, 200, 35, 10, ILI9341_WHITE);
-        lblLowAir.updateTextAndColor("HIGH LEVEL ALARM", ILI9341_RED, tft);
-        if (soundCounter++ > 5){
-           playSound(tmrpcm, "highLevel.wav");
-           soundCounter=0;
-        }
+      msg = "High Level Alarm";
+      alarmStatus = true;
     }
-    lblLowAir.draw(tft);
-    /*
 
     if (digitalRead(UVPin) == LOW)
     {
-        UVTrigger = 1;
-        lblLowAir.updateTextAndColor("UV ALARM", ILI9341_RED, tft);
-        if (soundCounter++ > 5){
-           playSound(tmrpcm, "UVAlarm.wav");
-           soundCounter=0;
-        }
-    } else {
-      if (UVTrigger)
-      {
-         lblLowAir.updateTextAndColor("UV ALARM RESET", ILI9341_BLACK, tft);
-         UVTrigger = 0;
-      }
-    }*/
+      msg = "UV Alarm";
+      alarmStatus = true;
+    }
+
+    if (digitalRead(spareAlarm) == LOW)
+    {
+      msg = "Spare Alarm";
+      alarmStatus = true;
+    }
+    
+     
+    lblMsg.updateTextAndColor(
+        (alarmStatus? msg: "System OK"),
+        (alarmStatus? ILI9341_RED : ILI9341_BLACK), tft);
         
-    //delay(100);
+           
+    delay(50);
   }
   //tft.fillScreen(ILI9341_BLACK);
 }
