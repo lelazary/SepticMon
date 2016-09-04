@@ -7,19 +7,20 @@ function read_wifi_credentials()
         wifi_ssid = string.format("%s", wifi_ssid:match( "^%s*(.-)%s*$" ))
         wifi_password = file.read("\n")
         wifi_password = string.format("%s", wifi_password:match( "^%s*(.-)%s*$" ))
+        server_url = file.read("\n")
+        server_url = string.format("%s", server_url:match( "^%s*(.-)%s*$" ))
         file.close()
     end
 
-    if wifi_ssid ~= nil and wifi_ssid ~= "" and wifi_password ~= nil then
-        return wifi_ssid, wifi_password
+    if wifi_ssid ~= nil and wifi_ssid ~= "" and wifi_password ~= nil and server_url ~= nil then
+        return wifi_ssid, wifi_password, server_url
     end
     return nil, nil
 end
 
 function try_connecting(wifi_ssid, wifi_password)
     wifi.setmode(wifi.STATION)
-    --wifi.sta.config(wifi_ssid, wifi_password)
-    wifi.sta.config("ATT7lvl9VY", "7%smc865cb8d")
+    wifi.sta.config(wifi_ssid, wifi_password)
     wifi.sta.connect()
 
     tmr.alarm(0, 500, 1, function()
@@ -41,13 +42,14 @@ function try_connecting(wifi_ssid, wifi_password)
     end)
 end
 
-wifi_ssid, wifi_password = read_wifi_credentials()
+wifi_ssid, wifi_password,server_url = read_wifi_credentials()
 if wifi_ssid ~= nil and wifi_password ~= nil then
     print("")
     print("Retrieved stored WiFi credentials")
     print("---------------------------------")
     print("wifi_ssid     : " .. wifi_ssid)
     print("wifi_password : " .. wifi_password)
+    print("server_url    : " .. server_url)
     print("")
     try_connecting(wifi_ssid, wifi_password)
 end

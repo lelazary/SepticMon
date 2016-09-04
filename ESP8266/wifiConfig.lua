@@ -103,8 +103,9 @@ function parse_wifi_credentials(vars)
 
     local _, _, wifi_ssid = string.find(vars, "wifi_ssid\=([^&]+)")
     local _, _, wifi_password = string.find(vars, "wifi_password\=([^&]+)")
+    local _, _, server_url = string.find(vars, "server_url\=([^&]+)")
 
-    if wifi_ssid == nil or wifi_ssid == "" or wifi_password == nil then
+    if wifi_ssid == nil or wifi_ssid == "" or wifi_password == nil  or server_url == nil then
         return false
     end
 
@@ -118,10 +119,12 @@ function parse_wifi_credentials(vars)
     print("-----------------------------")
     print("wifi_ssid     : " .. wifi_ssid)
     print("wifi_password : " .. wifi_password)
+    print("server_url    : " .. server_url)
 
     file.open("wifi_credentials", "w+")
     file.writeline(wifi_ssid)
     file.writeline(wifi_password)
+    file.writeline(server_url)
     file.flush()
     file.close()
     return true
