@@ -5,6 +5,7 @@ Copy the libraries from the libraries folder in this repository to arduino-1.6.5
 
 copy *.bmp and *.wav to the sdcard
 
+For the wifi module, use a tool to upload the lua/html files. For example: ESPlorer
 
 
 To Create Sounds
