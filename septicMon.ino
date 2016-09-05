@@ -12,6 +12,7 @@
 #include <Wire.h>
 #include "utils.h"
 
+
 #define VERSION "1.0.0"
 #define FLASH_ESP_BAUD 9600
 
@@ -26,7 +27,8 @@ void setClock();
 int lowAirPin = 30;
 int highLevelPin = 31;
 int UVPin = 32;
-int spareAlarm = 33;
+int spareAlarmPin = 33;
+HardwareSerial &wifi = Serial2;
 
 void blinkLED()
 {
@@ -54,8 +56,7 @@ void wifiSetup()
 
  // Initializing ESP module
  PLDuino::enableESP();
- HardwareSerial &wifi = Serial2;
- Serial2.begin(FLASH_ESP_BAUD);
+ wifi.begin(FLASH_ESP_BAUD);
  Serial.begin(FLASH_ESP_BAUD);
  
  tft.println("done.");
@@ -133,10 +134,6 @@ void setup()
   PLDuino::enableLCD();
   tft.begin();
   tft.setRotation(3);
-
-  // Setup serials. Serial2 is connected to ESP-02 Wi-Fi module.
-  Serial.begin(9600);
-  Serial2.begin(9600);
   
   // Print version info.
   tft.fillScreen(ILI9341_BLACK);
@@ -161,7 +158,25 @@ void setup()
   
   // Setup speaker pin to play sounds.
   tmrpcm.speakerPin = 9;
+
+  LOG("Init wifi");
+  // Initializing ESP module
+  PLDuino::enableESP();
   
+  wifi.begin(FLASH_ESP_BAUD);
+  Serial.begin(FLASH_ESP_BAUD);
+ 
+  // Reset ESP
+  digitalWrite(PLDuino::ESP_RST, LOW);
+  delay(500);
+  digitalWrite(PLDuino::ESP_RST, HIGH);
+  delay(3000);
+
+  // Skip its boot messages
+  while(wifi.available())
+    tft.write((char)wifi.read());
+  tft.println();
+  wifi.println("dofile(\"wifiConnect.lua\");");
   // Initialization is complete. 
   LOG("")
   LOG("Initialization complete.")
@@ -203,16 +218,20 @@ void showSepticStatus ()
   pinMode(lowAirPin, INPUT_PULLUP);
   pinMode(highLevelPin, INPUT_PULLUP);
   pinMode(UVPin, INPUT_PULLUP);
-  pinMode(spareAlarm, INPUT_PULLUP);
+  pinMode(spareAlarmPin, INPUT_PULLUP);
   
   bool soundPlayed = false;
   unsigned long starttime = millis();
   int soundCounter = 5;
-
+  unsigned long timer = 1*60*1000; //every 1 minute
+  long currentTimer = 0;
+  bool backLight = 1;
+  
   initDisplay();  
   
   while(true)
   {
+    
     if (touch.dataAvailable())
     {
       starttime = millis();
@@ -222,12 +241,29 @@ void showSepticStatus ()
       int x = pt.x;
       int y = pt.y;
       Serial.print("x = "); Serial.print(x); Serial.print("; "); Serial.print("y = "); Serial.println(y);
-      settings();
+      if (backLight)
+      {
+        Serial.print("Settings");
+        settings();
+      } else {
+        Serial.print("Turn Backlight back on");
+        pinMode(PLDuino::LCD_BACKLIGHT, OUTPUT); digitalWrite(PLDuino::LCD_BACKLIGHT, LOW);
+        backLight = 1;
+        currentTimer = 0;
+      }
       
     }
 
+    if (wifi.available())
+    {
+      char ch = wifi.read();
+      Serial.write(ch);
+    }
+
+     
     bool alarmStatus = false; //Indicate if we have an alarm
     String msg;
+    
     
     if (digitalRead(lowAirPin) == LOW)
     {
@@ -247,12 +283,37 @@ void showSepticStatus ()
       alarmStatus = true;
     }
 
-    if (digitalRead(spareAlarm) == LOW)
+    if (digitalRead(spareAlarmPin) == LOW)
     {
       msg = "Spare Alarm";
       alarmStatus = true;
     }
-    
+
+    if (currentTimer++ > 1000 )
+    {
+       Serial.println("Timer Triggered");
+       
+
+       String sensorData;
+       sensorData += "LowAir=";
+       sensorData += digitalRead(lowAirPin) ? "0" : "1";
+       
+       sensorData += "&HighLevel=";
+       sensorData += digitalRead(highLevelPin) ? "0" : "1";
+       
+       sensorData += "&UV=";
+       sensorData += digitalRead(UVPin) ? "0" : "1";
+       
+       sensorData += "&Spare=";
+       sensorData += digitalRead(spareAlarmPin) ? "0" : "1";
+       wifi.println("send_data(\"" + sensorData + "\")");
+       Serial.println("send_data(\"" + sensorData + "\")");
+       
+       pinMode(PLDuino::LCD_BACKLIGHT, OUTPUT); digitalWrite(PLDuino::LCD_BACKLIGHT, HIGH); //Turn LCD off
+       backLight = 0;
+       currentTimer = 0;
+      
+    }
      
     lblMsg.updateTextAndColor(
         (alarmStatus? msg: "System OK"),
