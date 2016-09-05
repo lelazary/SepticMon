@@ -1,6 +1,9 @@
 <!doctype html>
+
+
 <html>
 <head>
+
     <meta charset='utf-8'>
     <meta name='viewport' content='width=380'>
     <title>SepticMon WiFi Config</title>
@@ -11,7 +14,6 @@
             height: 100%;
             background: 
                 linear-gradient(rgba(196, 102, 0, 0.2), rgba(155, 89, 182, 0.2)), 
-                url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEYAAAA8AgMAAACm+SSwAAAADFBMVEVBR1FFS1VHTlg8Q0zU/YXIAAADVElEQVQ4yy1TTYvTUBQ9GTKiYNoodsCF4MK6U4TZChOhiguFWHyBFzqlLl4hoeNvEBeCrlrhBVKq1EUKLTP+hvi1GyguXqBdiZCBzGqg20K8L3hDQnK55+OeJNguHx6UujYl3dL5ALn4JOIUluAqeAWciyGaSdvngOWzNT+G0UyGUOxVOAdqkjXDCbBiUyjZ5QzYEbGadYAi6kHxth+kthXNVNCDofwhGv1D4QGGiM9iAjbCHgr2iUUpDJbs+VPQ4xAr2fX7KXbkOJMdok965Ksb+6lrjdkem8AshIuHm9Nyu19uTunYlOXDTQqi8VgeH0kBXH2xq/ouiMZPzuMukymutrBmulUTovC6HqNFW2ZOiqlpSXZOTvSUeUPxChjxol8BLbRy4gJuhV7OR4LRVBs3WQ9VVAU7SXgK2HeUrOj7bC8YsUgr3lEV/TXB7hK90EBnxaeg1Ov15bY80M736ekCGesGAaGvG0Ct4WRkVQVHIgIM9xJgvSFfPay8Q6GNv7VpR7xUnkvhnMQCJDYkYOtNLihV70tCU1Sk+BQrpoP+HLHUrJkuta40C6LP5GvBv+Hqo10ATxxFrTPvNdPr7XwgQud6RvQN/sXjBGzqbU27wcj9cgsyvSTrpyXV8gKpXeNJU3aFl7MOdldzV4+HfO19jBa5f2IjWwx1OLHIvFHkqbBj20ro1g7nDfY1DpScvDRUNARgjMMVO0zoMjKxJ6uWCPP+YRAWbGoaN8kXYHmLjB9FXLGOazfFVCvOgqzfnicNPrHtPKlex2ye824gMza0cTZ2sS2Xm7Qst/UfFw8O6vVtmUKxZy9xFgzMys5cJ5fxZw4y37Ufk1Dsfb8MqOjYxE3ZMWxiDcO0PYUaD2ys+8OW1pbB7/e3sfZeGVCL0Q2aMjjPdm2sxADuejZxHJAd8dO9DSUdA0V8/NggRRanDkBrANn8yHlEQOn/MmwoQfQF7xgmKDnv520bS/pgylP67vf3y2V5sCwfoCEMkZClgOfJAFX9eXefR2RpnmRs4CDVPceaRfoFzCkJVJX27vWZnoqyvmtXU3+dW1EIXIu8Qg5Qta4Zlv7drUCoWe8/8MXzaEwux7ESE9h6qnHj3mIO0/D9RvzfxPmjWiQ1vbeSk4rrHwhAre35EEVaAAAAAElFTkSuQmCC);
         }
         body {
             font-family: arial, verdana;
@@ -81,16 +83,18 @@
 </head>
 <body>
 <div>
-<form>
+<form id="wificonfig" name="wificonfig">
     <fieldset>
         <h2 class='fs-title'>WiFi Login</h2>
         <h3 class='fs-subtitle'>SepticMon WiFi Config</h3>
-        <input type='text' autocorrect='off' autocapitalize='none' name='server_url' placeholder='Server URL' />
+        <input type='text' autocorrect='off' autocapitalize='none' name='client_id' placeholder='Client ID' />
+        <input type='text' autocorrect='off' autocapitalize='none' name='server_url' placeholder='Server URL without http://' />
         <input type='text' autocorrect='off' autocapitalize='none' name='wifi_ssid' placeholder='WiFi Name' />
-        <input type='password' name='wifi_password' placeholder='Password' />
+        <input type='password' name='wifi_password' placeholder='Password'/>
         <input type='submit' name='save' class='submit action-button' value='Save' />
     </fieldset>
 </form>
+
 </div>
 </body>
 </html>

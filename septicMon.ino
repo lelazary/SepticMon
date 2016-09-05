@@ -13,6 +13,7 @@
 #include "utils.h"
 
 #define VERSION "1.0.0"
+#define FLASH_ESP_BAUD 9600
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(PLDuino::LCD_CS, PLDuino::LCD_DC);
 PLDTouch touch(PLDuino::TOUCH_CS, PLDuino::TOUCH_IRQ);
@@ -34,6 +35,86 @@ void blinkLED()
     digitalWrite(PLDuino::LED_PIN, LOW); delay(200);
     digitalWrite(PLDuino::LED_PIN, HIGH); delay(200);
   }
+}
+
+void wifiSetup()
+{
+
+ using namespace PLDuino;
+  
+ // Setup screen
+ tft.fillScreen(ILI9341_BLACK);
+ tft.setCursor(0, 0);
+ tft.setTextColor(ILI9341_WHITE);
+ tft.setTextSize(3);
+ tft.println("Wi-Fi setup. Connect to SepticMon ip 192.168.4.1.");
+ tft.setTextSize(1);
+ tft.println();
+ tft.print("Initializing ESP8266... ");
+
+ // Initializing ESP module
+ PLDuino::enableESP();
+ HardwareSerial &wifi = Serial2;
+ Serial2.begin(FLASH_ESP_BAUD);
+ Serial.begin(FLASH_ESP_BAUD);
+ 
+ tft.println("done.");
+ tft.println();
+
+ // Reset ESP
+ digitalWrite(PLDuino::ESP_RST, LOW);
+ delay(500);
+ digitalWrite(PLDuino::ESP_RST, HIGH);
+ delay(3000);
+
+ 
+ // Skip its boot messages
+ while(wifi.available())
+    tft.write((char)wifi.read());
+ tft.println();
+ 
+ 
+ String recv = "";
+ tft.println("Ready to setup wifi.");
+ wifi.println("dofile(\"wifiConfig.lua\");");
+ while(1)
+ {
+   if (wifi.available())
+   {
+      char ch = wifi.read();
+      Serial.write(ch);
+      tft.write((char)ch);
+   }
+   
+   if (Serial.available()) wifi.write(Serial.read());
+ }
+ 
+ /*while(true)
+  {
+    if (wifi.available())
+    {
+      char ch = wifi.read();
+      if (ch == 'C') recv = String();
+      else recv += ch;
+      
+      while(recv.length() >= 2)
+      {
+        // Extract 2-char command
+        String cmd = recv.substring(0, 2);
+        // Remove this command from the buffer
+        recv = recv.substring(2);
+        
+        Serial.print(cmd);
+        // Print only "R*"/"r*" and "O*"/"o*" commands
+        if (cmd != "ss")
+          tft.print(cmd);
+
+        // Execute the command
+        processCommand(cmd, wifi);
+      }
+    }
+  }*/
+  
 }
 
 void setup()
@@ -110,6 +191,7 @@ void settings()
 
    tft.fillScreen(ILI9341_BLACK);
    setClock();
+   wifiSetup();
    initDisplay();
   
 }
