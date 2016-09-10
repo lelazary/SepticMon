@@ -265,7 +265,7 @@ void showSepticStatus ()
     String msg;
     
     
-    if (digitalRead(lowAirPin) == LOW)
+    if (digitalRead(lowAirPin) == HIGH)
     {
       msg = "Low Air Alarm";
       alarmStatus = true;
@@ -296,7 +296,7 @@ void showSepticStatus ()
 
        String sensorData;
        sensorData += "LowAir=";
-       sensorData += digitalRead(lowAirPin) ? "0" : "1";
+       sensorData += digitalRead(lowAirPin) ? "1" : "0";
        
        sensorData += "&HighLevel=";
        sensorData += digitalRead(highLevelPin) ? "0" : "1";
