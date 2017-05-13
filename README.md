@@ -3,6 +3,7 @@ Install arduino-1.6.5 from https://www.arduino.cc/en/Main/OldSoftwareReleases#pr
 
 Copy the libraries from the libraries folder in this repository to arduino-1.6.5-r5/libraries
 
+select "Mega 2560" board
 copy *.bmp and *.wav to the sdcard
 
 For the wifi module, use a tool to upload the lua/html files. For example: ESPlorer
